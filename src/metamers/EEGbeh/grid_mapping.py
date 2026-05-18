@@ -93,8 +93,8 @@ def permWeighted2Dshifts(B, E, nPerm=5000):
     null_stats = np.zeros(nPerm)
 
     for p in range(nPerm):
-        shiftX = np.random.randint(0, 10)
-        shiftY = np.random.randint(0, 10)
+        shiftX = np.random.randint(0, 100)
+        shiftY = np.random.randint(0, 100)
 
         B_perm = np.roll(B_norm, shift=(shiftX, shiftY), axis=(0, 1))
         null_stats[p] = np.sum(E * B_perm)
