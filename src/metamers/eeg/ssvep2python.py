@@ -139,3 +139,42 @@ def update_ssvep_storage(mat_root=mat_root, npz_root=npz_root):
         )
 
     print("Update complete.")
+
+    # ---------------------------------------------------------------------
+# Incremental update: convert only new .mat files
+# ---------------------------------------------------------------------
+def transform1Set(mat_root=mat_root, fname ='default.mat', npz_root=npz_root):
+    """Convert a MATLAB .mat file into a .npz file. The conversion is field-agnostic: every variable in the .mat file is copied into the .npz."""
+
+    os.makedirs(npz_root, exist_ok=True)
+
+    mat_path = os.path.join(mat_root, fname)
+    npz_path = os.path.join(npz_root, fname.replace(".mat", ".npz"))
+
+    print(f"[convert] {fname} → {npz_path}")
+    # Here we write the conversion
+    # Load .mat file
+    mat_data = loadmat(mat_path)
+
+    # Remove MATLAB metadata fields
+    clean_data = {
+        key: value
+        for key, value in mat_data.items()
+        if not key.startswith("__")
+    }
+
+    # Save as .npz
+    np.savez(npz_path, **clean_data)
+
+    # Optional verification
+    data = np.load(npz_path, allow_pickle=True)
+
+    print("Saved fields:")
+    print(list(data.keys()))
+    # Save
+    # Load the npz to extract metadata
+    data = np.load(npz_path, allow_pickle=True)
+
+
+    print("Conversion complete.")
+
