@@ -56,4 +56,5 @@ MET038,1,PD,,/home/zevaz/projects/metamers/eeg/ssveps/MET038.npz
 MET038,2,PD,,/home/zevaz/projects/metamers/eeg/ssveps/MET038b.npz
 MET039,1,PD,,/home/zevaz/projects/metamers/eeg/ssveps/MET039.npz
 MET039,2,PD,,/home/zevaz/projects/metamers/eeg/ssveps/MET039b.npz
-MET040,1,PD,NA,/home/zevaz/projects/metamers/eeg/ssveps/MET040.npz
+MET040,1,PD,,/home/zevaz/projects/metamers/eeg/ssveps/MET040.npz
+MET043,1,CVD,deutan,/home/zevaz/projects/metamers/eeg/ssveps/MET043.npz
