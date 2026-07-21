@@ -144,6 +144,71 @@ def plot_participants(df, subids, color=None, title=None):
     plt.ylabel("Green")
     plt.tight_layout()
     plt.show()
+
+def plot_all_participants_with_group(
+    df,
+    parttype=3,
+    group_color="#96999a",
+    participant_color="#ff6b35",
+    title_prefix="Participant"
+):
+    """
+    Plot each participant in its own subplot, with the group data in the background.
+
+    Parameters
+    ----------
+    df : DataFrame
+        Behavioral table.
+    parttype : int
+        Group identifier (e.g., 3 for PD).
+    group_color : str
+        Hex color for background group points.
+    participant_color : str
+        Hex color for participant points.
+    title_prefix : str
+        Prefix for subplot titles.
+    """
+
+    # Extract group and participant list
+    df_group = df[df["PartType"] == parttype]
+    subs = sorted(df_group["SubID"].unique())
+    n = len(subs)
+
+    # Grid layout
+    cols = 4
+    rows = (n + cols - 1) // cols
+
+    fig, axes = plt.subplots(rows, cols, figsize=(16, rows * 4))
+    axes = axes.flatten()
+
+    for ax, sub in zip(axes, subs):
+        df_sub = df_group[df_group["SubID"] == sub]
+
+        # --- Background group plot ---
+        ax.scatter(
+            df_group["Red"], df_group["Green"],
+            s=20, color=group_color, alpha=0.35
+        )
+
+        # --- Foreground participant plot ---
+        ax.scatter(
+            df_sub["Red"], df_sub["Green"],
+            s=40, color=participant_color
+        )
+
+        ax.set_title(f"{title_prefix} {sub}")
+        ax.set_xlabel("Red")
+        ax.set_ylabel("Green")
+        ax.set_xlim(0, 3200)
+        ax.set_ylim(0, 2000)
+
+    # Hide unused axes
+    for ax in axes[n:]:
+        ax.axis("off")
+
+    plt.tight_layout()
+    plt.show()
+
 # ---------------------------------------------------------
 # 6. Plot multiple participants on the same axes
 # ---------------------------------------------------------

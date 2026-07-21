@@ -216,6 +216,89 @@ def plot_group_errors(
     plt.tight_layout()
     plt.show()
 
+def plot_group_errors_lims(
+    FM100,
+    info_table,
+    group_name=None,
+    subgroup_name=None,
+    smooth=True,
+    window=15,
+    show_individuals=False,
+    ymin=None,
+    ymax=None
+):
+    """
+    Same as plot_group_errors(), but allows manual y-axis limits.
+    """
+
+    curves = []
+    labels = []
+
+    for _, row in FM100.iterrows():
+        raw_id = row.iloc[3]
+        meta = identify_participant(raw_id, info_table)
+
+        # --- Filtering logic ---
+        if group_name is not None and meta["Group"] != group_name:
+            continue
+        if subgroup_name is not None and meta["Subgroup"] != subgroup_name:
+            continue
+
+        profile = extract_error_profile(row, info_table, smooth=smooth, window=window)
+        curve = profile["errors_smooth"] if smooth else profile["errors_raw"]
+
+        curves.append(curve)
+        labels.append(f"{meta['ValidID']}_S{meta['Session']}")
+
+    if len(curves) == 0:
+        print("No participants match the requested group/subgroup.")
+        return
+
+    curves = np.vstack(curves)
+    x = np.arange(1, 86)
+
+    mean_curve = curves.mean(axis=0)
+    std_curve  = curves.std(axis=0)
+
+    fig, ax = plt.subplots(figsize=(12, 5))
+
+    # Optional: plot individual curves
+    if show_individuals:
+        for c in curves:
+            ax.plot(x, c, color="gray", alpha=0.2)
+
+    # Mean curve
+    ax.plot(x, mean_curve, color="blue", linewidth=2, label="Mean")
+
+    # Std shading
+    ax.fill_between(
+        x,
+        mean_curve - std_curve,
+        mean_curve + std_curve,
+        color="blue",
+        alpha=0.2,
+        label="±1 std"
+    )
+
+    # Title logic
+    title = "FM100 Group Error Profile"
+    if group_name:
+        title += f" — {group_name}"
+    if subgroup_name:
+        title += f" ({subgroup_name})"
+
+    ax.set_title(title)
+    ax.set_xlabel("Cap Index (1–85)")
+    ax.set_ylabel("Error Value")
+    ax.grid(True, alpha=0.3)
+    ax.legend()
+
+    # --- Apply y-axis limits only if provided ---
+    if ymin is not None or ymax is not None:
+        ax.set_ylim(ymin, ymax)
+
+    plt.tight_layout()
+    plt.show()
 
 def plot_population_comparison(
     FM100,
